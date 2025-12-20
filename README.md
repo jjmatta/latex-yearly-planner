@@ -16,15 +16,36 @@ The "mos" version might not work correctly currently.
 Here are the steps to quickly get the project up and running.  
 See the `compiled` directory, and also [discussions](https://github.com/kudrykv/latex-yearly-planner/discussions) for prebuilt planners and their variations.
 
-### Building Your Own Planner (on Windows)
+### Building Your Own Planner
+
 #### Install Dependencies
+
+**Windows:**
 1. [Go Language](https://go.dev/dl/)
 2. LaTeX via [MiKTeX](https://miktex.org/howto/install-miktex)
 
+**macOS/Linux:**
+1. [Go Language](https://go.dev/dl/)
+2. LaTeX via [MacTeX](https://www.tug.org/mactex/) (macOS) or your distribution's package manager (Linux)
+   - For macOS: `brew install --cask mactex` or download from the MacTeX website
+   - For Linux: Install `texlive-xetex` and related packages via your package manager
+
 #### Instructions
+
+**Windows:**
 1. See instructions here for a detailed overview of configuration options and build steps: [How to Build Planner Files for Windows Users…Step-by-Step #94](https://github.com/kudrykv/latex-yearly-planner/discussions/94)
-2. You can also run the `compile_planner.bat` script, just replace the directory with your own, and update the .yaml files and xelatex filename according to the instructions above.
-3. Check the `out` directory for the generated planner PDF. To move it to your device, follow the manufacturer's instructions on how to load a PDF on your device.
+2. You can run the `compile_planner.bat` script. Update the .yaml files and xelatex filename according to the instructions above.
+
+**macOS/Linux:**
+1. You can run the `compile_planner.sh` script (make sure it's executable: `chmod +x compile_planner.sh`)
+2. Alternatively, use the existing shell scripts:
+   - `./build.sh [YEAR]` - Build the planner for a specific year (defaults to next year)
+   - `./preview.sh [YEAR]` - Preview the planner
+   - `./single.sh` - Core build script (used by other scripts)
+3. Update the .yaml files and configuration as needed.
+
+**All Platforms:**
+- Check the `out` directory for the generated planner PDF. To move it to your device, follow the manufacturer's instructions on how to load a PDF on your device.
 
 ## Preview examples
 ![01_annual](https://github.com/user-attachments/assets/a3cbc19a-b38c-473e-8a9d-b958e387497e)

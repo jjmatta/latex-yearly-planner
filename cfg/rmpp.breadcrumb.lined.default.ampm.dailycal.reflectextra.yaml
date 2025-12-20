@@ -12,7 +12,7 @@ layout:
     dailytophour: 20
     dailytodos: 10
     dailynotes: 25
-    dailyreflectextra: 3
+    dailyreflectextra: 4
   lengths:
     linethicknessdefault: .6pt
     linethicknessthick: 1.0pt
