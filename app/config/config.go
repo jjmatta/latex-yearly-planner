@@ -44,9 +44,13 @@ type Page struct {
 type RenderBlocks []RenderBlock
 
 func (r Pages) WeeklyEnabled() bool {
+	return r.HasFunc("weekly")
+}
+
+func (r Pages) HasFunc(funcName string) bool {
 	for _, s := range r {
 		for _, block := range s.RenderBlocks {
-			if block.FuncName == "weekly" {
+			if block.FuncName == funcName {
 				return true
 			}
 		}

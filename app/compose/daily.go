@@ -14,6 +14,7 @@ var DailyReflectExtended = DailyStuffExtended("Reflect Extended", "Reflect")
 func DailyStuff(prefix, leaf string) func(cfg config.Config, tpls []string) (page.Modules, error) {
 	return func(cfg config.Config, tpls []string) (page.Modules, error) {
 		year := cal.NewYear(cfg.WeekStart, cfg.Year)
+		showWeek := cfg.Pages.WeeklyEnabled()
 		modules := make(page.Modules, 0, 366)
 
 		for _, quarter := range year.Quarters {
@@ -33,12 +34,12 @@ func DailyStuff(prefix, leaf string) func(cfg config.Config, tpls []string) (pag
 								"Month":        month,
 								"Week":         week,
 								"Day":          day,
-								"Breadcrumb":   day.Breadcrumb(prefix, leaf, cfg.ClearTopRightCorner && len(leaf) > 0),
+								"Breadcrumb":   day.Breadcrumb(prefix, leaf, cfg.ClearTopRightCorner && len(leaf) > 0, showWeek),
 								"HeadingMOS":   day.HeadingMOS(prefix, leaf),
 								"SideQuarters": year.SideQuarters(day.Quarter()),
 								"SideMonths":   year.SideMonths(day.Month()),
 								"Extra":        day.PrevNext(prefix).WithTopRightCorner(cfg.ClearTopRightCorner),
-								"Extra2":       extra2(cfg.ClearTopRightCorner, false, false, week, 0),
+								"Extra2":       extra2(cfg, false, false, week, 0),
 							},
 						})
 					}
@@ -53,6 +54,7 @@ func DailyStuff(prefix, leaf string) func(cfg config.Config, tpls []string) (pag
 func DailyStuffExtended(prefix, leaf string) func(cfg config.Config, tpls []string) (page.Modules, error) {
 	return func(cfg config.Config, tpls []string) (page.Modules, error) {
 		year := cal.NewYear(cfg.WeekStart, cfg.Year)
+		showWeek := cfg.Pages.WeeklyEnabled()
 		modules := make(page.Modules, 0, 366*cfg.Layout.Numbers.DailyReflectExtra)
 
 		for _, quarter := range year.Quarters {
@@ -74,12 +76,12 @@ func DailyStuffExtended(prefix, leaf string) func(cfg config.Config, tpls []stri
 									"Week":         week,
 									"Day":          day,
 									"PageNum":      i + 1,
-									"Breadcrumb":   day.BreadcrumbExtended(prefix, leaf, i+2, cfg.ClearTopRightCorner && len(leaf) > 0),
+									"Breadcrumb":   day.BreadcrumbExtended(prefix, leaf, i+2, cfg.ClearTopRightCorner && len(leaf) > 0, showWeek),
 									"HeadingMOS":   day.HeadingMOS(prefix, leaf),
 									"SideQuarters": year.SideQuarters(day.Quarter()),
 									"SideMonths":   year.SideMonths(day.Month()),
 									"Extra":        day.PrevNextExtended(prefix, i, cfg.Layout.Numbers.DailyReflectExtra).WithTopRightCorner(cfg.ClearTopRightCorner),
-									"Extra2":       extra2(cfg.ClearTopRightCorner, false, false, week, 0),
+									"Extra2":       extra2(cfg, false, false, week, 0),
 								},
 							})
 						}
