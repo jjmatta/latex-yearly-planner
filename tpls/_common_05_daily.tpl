@@ -1,6 +1,7 @@
 {{- $today := .Body.Day -}}
 
 \begin{minipage}[t]{\myLenTriCol}
+\vspace{.5\baselineskip}
 {{template "schedule.tpl" dict "Cfg" .Cfg "Day" .Body.Day}}
   \vspace{\dimexpr2mm+.3pt}
 
@@ -10,10 +11,10 @@
 \end{minipage}%
 \hspace{\myLenTriColSep}%
 \begin{minipage}[t]{\dimexpr2\myLenTriCol+\myLenTriColSep}
-  \myUnderline{To do\myDummyQ}
-  \Repeat{\myNumDailyTodos}{\myTodoLineGray}
-  \vskip\dimexpr5.4mm
-  \myUnderline{Notes $\vert$ {{ $today.LinkLeaf "More" "More" }}\hfill{}{{ $today.LinkLeaf "Reflect" "Reflect" }}\hfill{}\hyperlink{Notes Index}{All notes}}
-  \myMash[\myDailySpring]{\myNumDailyNotes}{\myNumDotWidthTwoThirds}
+  \vspace{.5\baselineskip}
+  \myUnderline{Notes $\vert$ {{ $today.LinkLeaf "More" "Additional notes" }}}
+  \vbox to \dimexpr\textheight-\pagetotal-\myLenLineHeightButLine\relax {%
+    \leaders\hbox to \linewidth{\textcolor{\myColorGray}{\rule{0pt}{\myLenLineHeightButLine}\hrulefill}}\vfil
+  }
 \end{minipage}
 \par\pagebreak

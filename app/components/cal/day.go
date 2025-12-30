@@ -56,7 +56,7 @@ func (d Day) WeekLink() string {
 	return hyper.Link(d.ref(), strconv.Itoa(d.Time.Day())+", "+d.Time.Weekday().String())
 }
 
-func (d Day) Breadcrumb(prefix string, leaf string, shorten bool) string {
+func (d Day) Breadcrumb(prefix string, leaf string, shorten bool, showWeek bool) string {
 	wpref := ""
 	_, wn := d.Time.ISOWeek()
 	if wn > 50 && d.Time.Month() == time.January {
@@ -71,9 +71,11 @@ func (d Day) Breadcrumb(prefix string, leaf string, shorten bool) string {
 	dayItem := header.NewTextItem(d.Time.Format(dayLayout)).RefText(d.Time.Format(time.RFC3339))
 	items := header.Items{
 		header.NewIntItem(d.Time.Year()),
-		header.NewTextItem("Q" + strconv.Itoa(int(math.Ceil(float64(d.Time.Month())/3.)))),
 		header.NewMonthItem(d.Time.Month()).Shorten(shorten),
-		header.NewTextItem("Week " + strconv.Itoa(wn)).RefPrefix(wpref),
+	}
+
+	if showWeek {
+		items = append(items, header.NewTextItem("Week "+strconv.Itoa(wn)).RefPrefix(wpref))
 	}
 
 	if len(leaf) > 0 {
@@ -194,10 +196,11 @@ func (d Day) HeadingMOS(prefix, leaf string) string {
 	}
 
 	contents := strings.Join(r1, ` & `) + `\\` + "\n" + strings.Join(r2, ` & `)
+
 	return tex.Hypertarget(prefix+d.ref(), "") + tex.Tabular("@{}"+ll+"l|l"+rl, contents)
 }
 
-func (d Day) BreadcrumbExtended(prefix string, leaf string, pageNum int, shorten bool) string {
+func (d Day) BreadcrumbExtended(prefix string, leaf string, pageNum int, shorten bool, showWeek bool) string {
 	wpref := ""
 	_, wn := d.Time.ISOWeek()
 	if wn > 50 && d.Time.Month() == time.January {
@@ -212,15 +215,19 @@ func (d Day) BreadcrumbExtended(prefix string, leaf string, pageNum int, shorten
 	dayItem := header.NewTextItem(d.Time.Format(dayLayout)).RefText(d.Time.Format(time.RFC3339))
 	items := header.Items{
 		header.NewIntItem(d.Time.Year()),
-		header.NewTextItem("Q" + strconv.Itoa(int(math.Ceil(float64(d.Time.Month())/3.)))),
 		header.NewMonthItem(d.Time.Month()).Shorten(shorten),
-		header.NewTextItem("Week " + strconv.Itoa(wn)).RefPrefix(wpref),
+	}
+
+	if showWeek {
+		items = append(items, header.NewTextItem("Week "+strconv.Itoa(wn)).RefPrefix(wpref))
+	}
+
+	items = append(items,
 		dayItem,
-		// Add hypertarget for extended pages
 		header.NewTextItem(fmt.Sprintf("%s %d", leaf, pageNum)).
 			RefText(fmt.Sprintf("%s%d%s", prefix, pageNum, d.ref())).
 			Ref(true),
-	}
+	)
 
 	return items.Table(true)
 }

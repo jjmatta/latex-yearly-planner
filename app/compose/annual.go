@@ -11,43 +11,49 @@ import (
 
 func Annual(cfg config.Config, tpls []string) (page.Modules, error) {
 	year := cal.NewYear(cfg.WeekStart, cfg.Year)
+	extra := header.Items{}
+	if cfg.Pages.HasFunc("notes_indexed") {
+		extra = header.Items{header.NewTextItem("Notes").RefText("Notes Index")}
+	}
+	extra = extra.WithTopRightCorner(cfg.ClearTopRightCorner)
 
 	return page.Modules{{
 		Cfg: cfg,
 		Tpl: tpls[0],
 		Body: map[string]interface{}{
-			"Year":         year,
-			"Breadcrumb":   year.Breadcrumb(),
-			"HeadingMOS":   year.HeadingMOS(),
-			"SideQuarters": year.SideQuarters(0),
-			"SideMonths":   year.SideMonths(0),
-			"Extra": header.Items{header.NewTextItem("Notes").RefText("Notes Index")}.
-				WithTopRightCorner(cfg.ClearTopRightCorner),
-			"Extra2":            extra2(cfg.ClearTopRightCorner, true, false, nil, 0),
+			"Year":              year,
+			"Breadcrumb":        year.Breadcrumb(),
+			"HeadingMOS":        year.HeadingMOS(),
+			"SideQuarters":      year.SideQuarters(0),
+			"SideMonths":        year.SideMonths(0),
+			"Extra":             extra,
+			"Extra2":            extra2(cfg, true, false, nil, 0),
 			"ShowKeyOnYearPage": cfg.ShowKeyOnYearPage,
 		},
 	}}, nil
 }
 
-func extra2(ctrc, sel1, sel2 bool, week *cal.Week, idxPage int) header.Items {
+func extra2(cfg config.Config, sel1, sel2 bool, week *cal.Week, idxPage int) header.Items {
 	items := make(header.Items, 0, 3)
 
-	if week != nil {
+	if week != nil && cfg.Pages.WeeklyEnabled() {
 		items = append(items, header.NewCellItem(week.Name()))
 	}
 
-	items = append(items, header.NewCellItem("Calendar").Selected(sel1))
+	items = append(items, header.NewCellItem("Calendar").Refer("Calendar").Selected(sel1))
 
-	if idxPage > 0 {
-		suffix := ""
-		if idxPage > 1 {
-			suffix = " " + strconv.Itoa(idxPage)
+	if cfg.Pages.HasFunc("notes_indexed") {
+		if idxPage > 0 {
+			suffix := ""
+			if idxPage > 1 {
+				suffix = " " + strconv.Itoa(idxPage)
+			}
+
+			items = append(items, header.NewCellItem("Notes").Refer("Notes Index"+suffix).Selected(sel2))
+		} else {
+			items = append(items, header.NewCellItem("Notes").Refer("Notes Index").Selected(sel2))
 		}
-
-		items = append(items, header.NewCellItem("Notes").Refer("Notes Index"+suffix).Selected(sel2))
-	} else {
-		items = append(items, header.NewCellItem("Notes").Refer("Notes Index").Selected(sel2))
 	}
 
-	return items.WithTopRightCorner(ctrc)
+	return items.WithTopRightCorner(cfg.ClearTopRightCorner)
 }
