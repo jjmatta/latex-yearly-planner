@@ -1,0 +1,68 @@
+#!/bin/bash
+set -euo pipefail
+
+osascript_prompt() {
+  /usr/bin/osascript "$@"
+}
+
+prompt_input() {
+  local prompt_text=$1
+  local default_value=$2
+  osascript_prompt <<APP
+set theDialog to display dialog "$prompt_text" default answer "$default_value"
+text returned of theDialog
+APP
+}
+
+prompt_folder() {
+  osascript_prompt <<APP
+POSIX path of (choose folder with prompt "Select destination folder for the PDF")
+APP
+}
+
+show_alert() {
+  local title=$1
+  local msg=${2:-""}
+  osascript_prompt <<APP
+display alert "$title" message "$msg"
+APP
+}
+
+year=$(prompt_input "Enter planner year" "$(date +%Y)") || exit 0
+year=$(echo "$year" | tr -d ' \t')
+if [[ -z "$year" ]]; then
+  show_alert "Invalid input" "Year cannot be empty."
+  exit 1
+fi
+
+name=$(prompt_input "Enter output PDF name (without .pdf)" "Planner $year") || exit 0
+name=$(echo "$name" | sed 's/\s\+/ /g')
+if [[ -z "$name" ]]; then
+  show_alert "Invalid input" "Name cannot be empty."
+  exit 1
+fi
+
+folder=$(prompt_folder) || exit 0
+if [[ -z "$folder" ]]; then
+  exit 0
+fi
+
+app_dir=$(cd "$(dirname "$0")" && pwd)
+repo_dir=$(cd "$app_dir/../../.." && pwd)
+
+cfg_stack='cfg/base.yaml,cfg/template_breadcrumb.yaml,cfg/rmpp.base.yaml,cfg/rmpp.breadcrumb.lined.default.ampm.dailycal.reflectextra.yaml'
+build_cmd="cd $repo_dir && PLANNER_YEAR=$year PASSES=2 CFG=$cfg_stack NAME=rmpp_app_build ./single.sh"
+
+if ! /bin/bash -lc "$build_cmd"; then
+  show_alert "Build failed" "Check Terminal for details."
+  exit 1
+fi
+
+src="$repo_dir/rmpp_app_build.pdf"
+dest="$folder$name.pdf"
+if cp "$src" "$dest"; then
+  show_alert "Planner saved" "$dest"
+else
+  show_alert "Copy failed" "Could not copy PDF to destination."
+  exit 1
+fi

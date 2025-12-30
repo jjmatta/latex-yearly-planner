@@ -11,6 +11,7 @@ The "mos" version might not work correctly currently.
 4. Option to add a title to the first/Cover page
 5. Option to add a key/legend to the Year page (used to indicate which days have a certain property, such as days with journal entries, by using the highlighter feature on the tablet)
 6. Added margin and formatting YAML file specific for Remarkable Paper Pro tablet
+7. `rmppapp` helper that builds the Remarkable Paper Pro (breadcrumb) layout with a single command
 
 ## Quick Start Guide
 Here are the steps to quickly get the project up and running.  
@@ -47,6 +48,26 @@ See the `compiled` directory, and also [discussions](https://github.com/kudrykv/
 **All Platforms:**
 - Check the `out` directory for the generated planner PDF. To move it to your device, follow the manufacturer's instructions on how to load a PDF on your device.
 
+### RMPP Builders
+
+**GUI app:** double-click `RMPP Planner.app` in the repo root. Enter the year, PDF name, and destination folder via the dialogs, then hit **OK**—the helper runs the `rmpp.breadcrumb.lined.default.ampm.dailycal.reflectextra` stack and drops the finished PDF where you choose. The underlying script lives at `scripts/rmpp_app.sh` if you ever need to tweak it.
+
+**CLI helper:** prefer the terminal? Run:
+
+```bash
+go run ./cmd/rmppapp \
+  -year 2026 \
+  -name "Planner 2026" \
+  -output ~/Desktop
+```
+
+Arguments:
+- `-year` (defaults to current year) selects which planner to generate.
+- `-name` controls the filename (without `.pdf`).
+- `-output` sets the folder where the finished PDF is copied.
+
+Both helpers call `single.sh` under the hood, so Go/LaTeX still need to be installed locally.
+
 ## Preview examples
 ![01_annual](https://github.com/user-attachments/assets/a3cbc19a-b38c-473e-8a9d-b958e387497e)
 ![01_annual_key](https://github.com/user-attachments/assets/bdbf3b33-30ea-4704-b9fe-69c82c274456)
@@ -59,5 +80,3 @@ See the `compiled` directory, and also [discussions](https://github.com/kudrykv/
 ![07_daily_notes](https://github.com/user-attachments/assets/5c8abd17-4f49-4484-9244-b43e6963ae59)
 ![08_notes_index](https://github.com/user-attachments/assets/ac1a6563-bc11-4a59-be15-db33d4284fae)
 ![09_notes](https://github.com/user-attachments/assets/c7f63cea-2b3c-401d-8d5a-c43bc05397d3)
-
-
